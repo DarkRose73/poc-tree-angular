@@ -1,35 +1,9 @@
-import { FlatTreeControl, NestedTreeControl } from '@angular/cdk/tree';
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component } from '@angular/core';
 import {
   MatTreeFlattener,
   MatTreeFlatDataSource,
-  MatTreeNestedDataSource,
 } from '@angular/material/tree';
-
-interface FoodNode {
-  name: string;
-  children?: FoodNode[];
-}
-
-const TREE_DATA: FoodNode[] = [
-  {
-    name: 'Fruit',
-    children: [{ name: 'Apple' }, { name: 'Banana' }, { name: 'Fruit loops' }],
-  },
-  {
-    name: 'Vegetables',
-    children: [
-      {
-        name: 'Green',
-        children: [{ name: 'Broccoli' }, { name: 'Brussels sprouts' }],
-      },
-      {
-        name: 'Orange',
-        children: [{ name: 'Pumpkins' }, { name: 'Carrots' }],
-      },
-    ],
-  },
-];
 
 /** Flat node with expandable and level information */
 interface ExampleFlatNode {
@@ -75,6 +49,11 @@ export class TreeComponent {
     '9->22',
     '15',
     '22',
+    '23',
+    '23->45',
+    '23->48',
+    '55',
+    '55->56->57->58',
   ];
 
   listaPermisos: Permiso[] = [
@@ -91,47 +70,44 @@ export class TreeComponent {
     { nombre: 'menu14', idMenu: 14 },
     { nombre: 'menu15', idMenu: 15 },
     { nombre: 'menu22', idMenu: 22 },
+    { nombre: 'menu23', idMenu: 23 },
+    { nombre: 'menu45', idMenu: 45 },
+    { nombre: 'menu48', idMenu: 48 },
+    { nombre: 'menu55', idMenu: 55 },
+    { nombre: 'menu56', idMenu: 56 },
+    { nombre: 'menu57', idMenu: 57 },
+    { nombre: 'menu58', idMenu: 58 },
   ];
 
-  // private _transformer = (node: FoodNode, level: number) => {
-  //   return {
-  //     expandable: !!node.children && node.children.length > 0,
-  //     name: node.name,
-  //     level: level,
-  //   };
-  // };
+  private _transformer = (node: NodoArbol, level: number) => {
+    return {
+      expandable: !!node.hijos && node.hijos.length > 0,
+      name: node.permiso.nombre,
+      level: level,
+    };
+  };
 
-  // treeControl = new FlatTreeControl<ExampleFlatNode>(
-  //   (node) => node.level,
-  //   (node) => node.expandable
-  // );
+  treeControl = new FlatTreeControl<ExampleFlatNode>(
+    (node) => node.level,
+    (node) => node.expandable
+  );
+  // treeControl = new NestedTreeControl<NodoArbol>((node) => node.hijos);
 
-  // treeFlattener = new MatTreeFlattener(
-  //   this._transformer,
-  //   (node) => node.level,
-  //   (node) => node.expandable,
-  //   (node) => node.children
-  // );
-
-  // dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-
-  // constructor() {
-  //   this.dataSource.data = TREE_DATA;
-  // }
-
-  // hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
-
-  // TEST
-  treeControl = new NestedTreeControl<NodoArbol>((node) => node.hijos);
-  dataSource = new MatTreeNestedDataSource<NodoArbol>();
+  treeFlattener = new MatTreeFlattener(
+    this._transformer,
+    (node) => node.level,
+    (node) => node.expandable,
+    (node) => node.hijos
+  );
+  // dataSource = new MatTreeNestedDataSource<NodoArbol>();
+  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   constructor() {
     const nodos = this.construirArbol(this.listaJerarquias, this.listaPermisos);
     this.dataSource.data = nodos;
   }
 
-  hasChild = (_: number, node: NodoArbol) =>
-    !!node.hijos && node.hijos.length > 0;
+  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
 
   private construirArbol(
     listaJerarquias: string[],
@@ -204,5 +180,10 @@ export class TreeComponent {
     }
 
     return nodos;
+  }
+
+  mostrarArbolConsola(): void {
+    let a = this.construirArbol(this.listaJerarquias, this.listaPermisos);
+    console.log(a);
   }
 }
