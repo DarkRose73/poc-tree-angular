@@ -18,8 +18,17 @@ interface Permiso {
 }
 
 interface NodoArbol {
-  permiso: Permiso;
+  permiso: Permission;
   hijos: NodoArbol[];
+}
+
+interface Permission {
+  idPerfilMenuPermiso: number;
+  profile: string;
+  profileValue: string;
+  menu: string;
+  idMenu: number;
+  permission: number;
 }
 
 @Component({
@@ -41,8 +50,8 @@ export class TreeComponent {
     '3',
     '4',
     '4->5',
+    '4->8->6',
     '4->8->10',
-    '6',
     '7',
     '9',
     '9->14',
@@ -54,6 +63,94 @@ export class TreeComponent {
     '23->48',
     '55',
     '55->56->57->58',
+  ];
+
+  // JERARQUIA
+  listaJerarquias2: string[] = [
+    '44->46->52',
+    '44->46->51',
+    '44->46->49',
+    '44->46',
+    '44',
+    '45->47->48',
+    '45->47',
+    '45',
+  ];
+
+  // PERMISOS
+  listaPermisos2: Permission[] = [
+    {
+      idPerfilMenuPermiso: 2,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Retail',
+      idMenu: 44,
+      permission: 3,
+    },
+    {
+      idPerfilMenuPermiso: 3,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Mantenedores retail',
+      idMenu: 46,
+      permission: 0,
+    },
+    {
+      idPerfilMenuPermiso: 4,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Mantenedores administración',
+      idMenu: 47,
+      permission: 3,
+    },
+    {
+      idPerfilMenuPermiso: 5,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Roles y Permisos',
+      idMenu: 48,
+      permission: 3,
+    },
+    {
+      idPerfilMenuPermiso: 6,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Estaciones y Productos',
+      idMenu: 49,
+      permission: 0,
+    },
+    {
+      idPerfilMenuPermiso: 8,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Grupos de Estaciones',
+      idMenu: 51,
+      permission: 0,
+    },
+    {
+      idPerfilMenuPermiso: 9,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Revendedores',
+      idMenu: 52,
+      permission: 0,
+    },
+    {
+      idPerfilMenuPermiso: 10,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Administración',
+      idMenu: 45,
+      permission: 3,
+    },
+    {
+      idPerfilMenuPermiso: 96,
+      profile: 'Administrador Retail',
+      profileValue: 'PricemaxRetailAdministrador',
+      menu: 'Retail',
+      idMenu: 44,
+      permission: 0,
+    },
   ];
 
   listaPermisos: Permiso[] = [
@@ -82,7 +179,7 @@ export class TreeComponent {
   private _transformer = (node: NodoArbol, level: number) => {
     return {
       expandable: !!node.hijos && node.hijos.length > 0,
-      name: node.permiso.nombre,
+      name: node.permiso.menu,
       level: level,
     };
   };
@@ -103,7 +200,10 @@ export class TreeComponent {
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   constructor() {
-    const nodos = this.construirArbol(this.listaJerarquias, this.listaPermisos);
+    const nodos = this.construirArbol(
+      this.listaJerarquias2,
+      this.listaPermisos2
+    );
     this.dataSource.data = nodos;
   }
 
@@ -111,7 +211,7 @@ export class TreeComponent {
 
   private construirArbol(
     listaJerarquias: string[],
-    listaPermisos: Permiso[]
+    listaPermisos: Permission[]
   ): NodoArbol[] {
     const nodos: NodoArbol[] = [];
 
@@ -183,7 +283,7 @@ export class TreeComponent {
   }
 
   mostrarArbolConsola(): void {
-    let a = this.construirArbol(this.listaJerarquias, this.listaPermisos);
+    let a = this.construirArbol(this.listaJerarquias2, this.listaPermisos2);
     console.log(a);
   }
 }
